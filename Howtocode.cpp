@@ -1,15 +1,19 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
-#include <vector> 
+#include <fstream>
+#include <vector>
 
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 using namespace std;
 
 //================= โครงสร้างข้อมูลต่อโต๊ะ =================
 struct TableOrder {
-    vector<string> List;   
-    vector<int> Price;    
-    vector<int> Amount;   
+    vector<string> List;   // เปลี่ยนเป็น vector
+    vector<int> Price;    // เปลี่ยนเป็น vector
+    vector<int> Amount;   // เปลี่ยนเป็น vector
     int count = 0;
     int total = 0;
 };
@@ -21,12 +25,12 @@ vector<TableOrder> tables(6); // โต๊ะ 1-5 ใช้จริง
 string food;
 int Num;
 int table = 0;
+int price[6];
 int menu;
 int more;
 int amount;
 int check;
 
-vector<int> price(6, 0);
 vector<int> useTable(6, 0);
 
 //================= prototypes =================
@@ -151,7 +155,7 @@ void menuu() {
         cout << " 1) Spicy Tom Yum Goong Soup With Rice   80/85 BTH" << endl;
         cout << " 2) Mango Sticky Rice                    50/55 BTH" << endl;
         cout << " 3) Som Tam Thai                         50/60 BTH" << endl;
-        cout << "Select Item >> "; 
+        cout << "Select Item >> ";
         cin >> item;
 
         if (item == 1) {
@@ -181,7 +185,7 @@ void menuu() {
         cout << "========== MAIN COURSES ==========" << endl;
         cout << " 1) Fried Pork Rice      30/35 BTH" << endl;
         cout << " 2) Fried Chicken Rice   30/35 BTH" << endl;
-        cout << "Select Item >> "; 
+        cout << "Select Item >> ";
         cin >> item;
 
         if (item == 1) {
@@ -205,24 +209,26 @@ void menuu() {
         cout << " 1) Water 10 | 2) Soft Drink 20" << endl;
         cout << "Select Item >> ";
         cin >> item;
-        if (item == 1) { 
-            food = "Water"; 
-            price[menu] = 10; }
-        else { 
-            food = "Soft Drink"; 
-            price[menu] = 20; }
+        if (item == 1) {
+            food = "Water";
+            price[menu] = 10;
+        }
+        else {
+            food = "Soft Drink";
+            price[menu] = 20;
+        }
     }
     else if (menu == 4) {
         cout << endl << endl << endl;
         cout << "========== DESSERTS ==========" << endl;
         cout << " 1) Ice Cream 15 | 2) Cake 30" << endl;
-        cout << "Select Item >> "; 
+        cout << "Select Item >> ";
         cin >> item;
-        if (item == 1) { 
-            food = "Ice Cream"; 
-            price[menu] = 15; 
+        if (item == 1) {
+            food = "Ice Cream";
+            price[menu] = 15;
         }
-        else { 
+        else {
             food = "Cake"; price[menu] = 30;
         }
     }
@@ -234,14 +240,14 @@ int moree() {
         backtohome();
         cin >> more;
         if (more == 1) return 1;
-        if (more == 2) { 
-            showBill(); 
-            return 0; 
+        if (more == 2) {
+            showBill();
+            return 0;
         }
         if (more == 0) return 0;
-        if (more == 9) { 
-            selectTable(); 
-            return 1; 
+        if (more == 9) {
+            selectTable();
+            return 1;
         }
         cout << "Invalid!! try again" << endl;
     }
@@ -327,17 +333,77 @@ void checktable() {
 
 void checkfood() {}
 
+void saveData() {
+    json j;
+    //j["grandTotal"] = grandTotal;
+
+    // เก็บสถิติการใช้โต๊ะ
+    for (int i = 1; i <= 5; i++) {
+       j["useTable"][to_string(i)] = useTable[i];
+    }
+
+    // เก็บข้อมูลแต่ละโต๊ะ
+    for (int i = 1; i <= 5; i++) {
+        json tJ;
+        tJ["count"] = tables[i].count;
+        tJ["total"] = tables[i].total;
+
+        json orders = json::array();
+        for (int k = 0; k < tables[i].count; k++) {
+            orders.push_back({
+                {"item", tables[i].List[k]},
+                {"price", tables[i].Price[k]},
+                {"qty", tables[i].Amount[k]}
+                });
+        }
+        tJ["orders"] = orders;
+        j["tables"][to_string(i)] = tJ;
+    }
+
+    ofstream file("database.json");
+    file << j.dump(4); // บันทึกแบบเว้นวรรคให้อ่านง่าย
+    file.close();
+}
+void loadData() {
+    ifstream file("database.json");
+    if (!file.is_open()) return;
+
+    json j;
+    file >> j;
+    file.close();
+
+    //grandTotal = j.value("grandTotal", 0);
+
+    for (int i = 1; i <= 5; i++) {
+        useTable[i] = j["useTable"].value(to_string(i), 0);
+
+        if (!j["tables"].contains(to_string(i))) continue;
+
+        auto& tJson = j["tables"][to_string(i)];
+        tables[i].count = tJson.value("count", 0);
+        tables[i].total = tJson.value("total", 0);
+
+        for (auto& order : tJson["orders"]) {
+            tables[i].List.push_back(order.value("item", ""));
+            tables[i].Price.push_back(order.value("price", 0));
+            tables[i].Amount.push_back(order.value("qty", 0));
+        }
+    }
+}
+
 int main() {
+    loadData();
     while (true) {
         home();
         if (cin.fail()) {
-            cin.clear(); 
+            cin.clear();
             cin.ignore(1000, '\n');
             cout << "Invalid input! Try again." << endl;
             continue;
         }
         if (Num == 0) {
             cout << endl << "Exiting program..." << endl;
+            saveData();
             return 0;
         }
         if (Num == 1) { table = 0; customer(); }
