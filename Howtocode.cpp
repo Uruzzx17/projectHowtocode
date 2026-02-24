@@ -288,27 +288,115 @@ void showBill() {
 
 void employ() {
     while (true) {
-        cout << "\n======= TABLE STATUS =======" << endl;
-        for (int i = 1; i < tables.size(); i++) {
-            cout << "Table " << i << " : " << (tables[i].count > 0 ? "[NOT AVAILABLE]" : "[AVAILABLE]") << endl;
-        }
-        cout << "Select table (0 to Exit): ";
-        cin >> check;
-        if (check == 0) return;
-        if (check < 1 || check >= tables.size()) { cout << "Invalid Table!" << endl; continue; }
+        int cep;
+        cout << "--------EMPLOYEE MENU ---------" << endl;
+        cout << "1.Check Table Status" << endl;
+        cout << "2." << endl;
+        cout << "0.Back" << endl;
+        cout << "SELECT >> ";
+        cin >> cep;
+        if (cep == 1) {
+            cout << "\n====================================================================\n";
+            cout << "                       TABLE STATUS DASHBOARD                       \n";
+            cout << "====================================================================\n";
 
-        if (tables[check].count > 0) {
-            cout << "Total : " << tables[check].total << " Baht. Clear table? (1.Yes / 0.No): ";
-            int clear; cin >> clear;
-            if (clear == 1) {
-                tables[check].List.clear(); tables[check].Price.clear(); tables[check].Amount.clear();
-                tables[check].count = 0; tables[check].total = 0;
-                cout << ">>> CLEARED <<<" << endl;
+            cout << left << setw(8) << "TABLE"
+                << setw(20) << "STATUS"
+                << setw(12) << "ORDERS"
+                << setw(15) << "TOTAL(BAHT)"
+                << endl;
+
+            cout << "--------------------------------------------------------------------\n";
+
+            for (int i = 1; i < tables.size(); i++) {
+                string status;
+                // เช็กสถานะ 3 แบบ: จอง / ไม่ว่าง / ว่าง
+                if (tables[i].total == -1) status = "RESERVED";
+                else if (tables[i].count > 0) status = "NOT AVAILABLE";
+                else status = "AVAILABLE";
+
+                cout << left << setw(8) << i
+                    << setw(20) << status
+                    << setw(12) << (tables[i].total == -1 ? "-" : to_string(tables[i].count))
+                    << right << setw(10) << (tables[i].total == -1 ? "-" : to_string(tables[i].total))
+                    << endl;
+            }
+
+            cout << "--------------------------------------------------------------------\n";
+            cout << "SELECT TABLE TO MANAGE (0 = BACK) >> ";
+
+            cin >> check;
+
+            if (check == 0) return;
+
+            if (check < 1 || check >= tables.size()) {
+                cout << "\n!!! INVALID TABLE NUMBER !!!\n";
+                continue;
+            }
+
+            // --- กรณีโต๊ะว่าง: ให้เลือกว่าจะ "จอง" หรือไม่ ---
+            if (tables[check].count == 0 && tables[check].total != -1) {
+                cout << "\nTable " << check << " is Empty.\n";
+                cout << "1. Reserve Table (For Booking)\n0. Back\nSelect >> ";
+                int reserve; cin >> reserve;
+                if (reserve == 1) {
+                    tables[check].total = -1;
+                    cout << "\n>>> TABLE " << check << " RESERVED SUCCESSFULLY <<<\n";
+                }
+            }
+            // --- กรณีโต๊ะโดนจอง: ให้เลือกว่าจะ "ยกเลิกการจอง" หรือไม่ ---
+            else if (tables[check].total == -1) {
+                cout << "\n!!! TABLE " << check << " IS CURRENTLY RESERVED !!!\n";
+                cout << "1. Unreserve (Cancel Booking)\n0. Back\nSelect >> ";
+                int unreserve; cin >> unreserve;
+                if (unreserve == 1) {
+                    tables[check].total = 0;
+                    cout << "\n>>> TABLE " << check << " IS NOW AVAILABLE <<<\n";
+                }
+            }
+            // --- กรณีโต๊ะมีออเดอร์: แสดงรายละเอียดและถามเรื่องเคลียร์โต๊ะ ---
+            else if (tables[check].count > 0) {
+                cout << "\nTABLE " << check << " DETAILS :\n";
+                cout << left << setw(5) << "No"
+                    << setw(20) << "Item"
+                    << setw(10) << "Price"
+                    << setw(8) << "Qty"
+                    << setw(12) << "Subtotal"
+                    << endl;
+
+                cout << "---------------------------------------------------------------\n";
+
+                for (int i = 0; i < tables[check].count; i++) {
+                    cout << left << setw(5) << i + 1
+                        << setw(20) << tables[check].List[i]
+                        << setw(10) << tables[check].Price[i]
+                        << setw(8) << tables[check].Amount[i]
+                        << setw(12) << tables[check].Price[i] * tables[check].Amount[i] << endl;
+                }
+
+                cout << "---------------------------------------------------------------\n";
+                cout << right << setw(50) << "TOTAL : "
+                    << tables[check].total << " BAHT\n";
+
+                cout << "\nCLEAR TABLE? (1 = YES / 0 = NO) >> ";
+
+                int clear;
+                cin >> clear;
+
+                if (clear == 1) {
+                    tables[check].List.clear();
+                    tables[check].Price.clear();
+                    tables[check].Amount.clear();
+                    tables[check].count = 0;
+                    tables[check].total = 0;
+                    cout << "\n>>> TABLE CLEARED SUCCESSFULLY <<<\n";
+                }
             }
         }
         else cout << "No orders" << endl;
     }
 }
+ 
 
 void Host() {
     int choose;
