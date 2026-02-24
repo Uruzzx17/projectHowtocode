@@ -1,4 +1,4 @@
-#include <iostream>
+#include <iostream> 
 #include <string>
 #include <iomanip>
 #include <fstream>
@@ -174,12 +174,18 @@ void menuu() {
     int item, size;
 
     if (menu == 1) { // หมวด RECOMMENDED
-        cout << "\n--- RECOMMENDED ---\n1.TOM YUM (80/85) 2.MANGO RICE (50/55) 3.SOM TAM (50/60)\nSELECT >> ";
+        cout << "\n\n";
+        cout << "\n\n\n==================== RECOMMENDED ====================" << endl;
+        cout << " 1) SPICY TOM YUM GOONG SOUP WITH RICE   80/85 BTH" << endl;
+        cout << " 2) MANGO STICKY RICE                    50/55 BTH" << endl;
+        cout << " 3) SOM TAM THAI                         50/60 BTH" << endl;
+        cout << "-----------------------------------------------------" << endl;
+        cout << "SELECT MENU (1-3) >> ";
         item = Helpercode(1, 3);
 
         if (item == 1) {
-            food = "TOM YUM";
-            cout << "SIZE (1)80 (2)85 >> ";
+            food = "SPICY TOM YUM GOONG SOUP WITH RICE";
+            cout << "SELECT SIZE (1) NORMAL 80 / (2) EXTRA 85 >> ";
             size = Helpercode(1, 2);
             if (size == 1) {
                 price[menu] = 80;
@@ -189,8 +195,9 @@ void menuu() {
             }
         }
         else if (item == 2) {
-            food = "MANGO RICE";
-            cout << "SIZE (1)50 (2)55 >> ";
+            food = "MANGO STICKY RICE";
+            cout << "SELECT SIZE (1) NORMAL 50 / (2) EXTRA 55 >> ";
+
             size = Helpercode(1, 2);
             if (size == 1) {
                 price[menu] = 50;
@@ -200,8 +207,8 @@ void menuu() {
             }
         }
         else { // item == 3
-            food = "SOM TAM";
-            cout << "SIZE (1)50 (2)60 >> ";
+            food = "SOM TAM THAI";
+            cout << "SELECT SIZE (1) NORMAL 50 / (2) EXTRA 60 >> ";
             size = Helpercode(1, 2);
             if (size == 1) {
                 price[menu] = 50;
@@ -212,17 +219,22 @@ void menuu() {
         }
     }
     else if (menu == 2) { // หมวด MAIN COURSES
-        cout << "\n--- MAIN COURSES ---\n1.PORK RICE (30/35) 2.CHICKEN RICE (30/35)\nSELECT >> ";
+        cout << "\n\n\n========== MAIN COURSES ==========" << endl;
+        cout << " 1) FRIED PORK RICE      30/35 BTH" << endl;
+        cout << " 2) FRIED CHICKEN RICE   30/35 BTH" << endl;
+        cout << "----------------------------------" << endl;
+        cout << "SELECT MENU (1-2) >> ";
+
         item = Helpercode(1, 2);
 
         if (item == 1) {
-            food = "PORK RICE";
+            food = "FRIED PORK RICE";
         }
         else {
-            food = "CHICKEN RICE";
+            food = "FRIED CHICKEN RICE";
         }
 
-        cout << "SIZE (1)30 (2)35 >> ";
+        cout << "SELECT SIZE (1) NORMAL 30 / (2) EXTRA 35 >> ";
         size = Helpercode(1, 2);
         if (size == 1) {
             price[menu] = 30;
@@ -232,7 +244,13 @@ void menuu() {
         }
     }
     else if (menu == 3) { // หมวด BEVERAGES
-        cout << "\n--- BEVERAGES ---\n1.WATER (10) 2.SOFT DRINK (20)\nSELECT >> ";
+        cout << "\n\n\n=============== BEVERAGES ===============" << endl;
+        cout << " 1) WATER                         10 BTH " << endl;
+        cout << " 2) SOFT DRINK                    20 BTH " << endl;
+        cout << "-----------------------------------------" << endl;
+        cout << "SELECT MENU (1-2) >> ";
+
+
         item = Helpercode(1, 2);
 
         if (item == 1) {
@@ -245,7 +263,12 @@ void menuu() {
         }
     }
     else if (menu == 4) { // หมวด DESSERTS
-        cout << "\n--- DESSERTS ---\n1.ICE CREAM (15) 2.CAKE (30)\nSELECT >> ";
+        cout << "\n\n\n================ DESSERTS ===============" << endl;
+        cout << " 1) ICE CREAM                     15 BTH" << endl;
+        cout << " 2) CAKE                          30 BTH" << endl;
+        cout << "-----------------------------------------" << endl;
+        cout << "SELECT MENU (1-2) >> ";
+
         item = Helpercode(1, 2);
 
         if (item == 1) {
@@ -393,25 +416,40 @@ void employ() {
                 }
             }
         }
-        else cout << "No orders" << endl;
     }
 }
- 
+
 
 void Host() {
     int choose;
     while (true) {
-        cout << "\n--- HOST MENU ---\n|1.Summary |2.Usage |3.Best selling |4.Payslip |5.View Data |6.Save |7.Manage Tables |8.reset |0.Back|\nSELECT >> ";
+        cout << "\n\n";
+        cout << "==================================================\n";
+        cout << "                 HOST CONTROL PANEL               \n";
+        cout << "==================================================\n";
+        cout << "  [1] SUMMARY\n";
+        cout << "  [2] TABLE USAGE\n";
+        cout << "  [3] BEST SELLING MENU\n";
+        cout << "  [4] DAILY PAYSLIP REPORT\n";
+        cout << "  [5] VIEW SAVED DATA\n";
+        cout << "  [6] SAVE & RESET ALL DATA\n";
+        cout << "  [8] RESETDATA\n";
+        cout << "--------------------------------------------------\n";
+        cout << "  [0] BACK TO MAIN MENU\n";
+        cout << "==================================================\n";
+        cout << "SELECT OPTION >> ";
         cin >> choose;
+
         if (choose == 0) return;
         else if (choose == 1) summarize();
         else if (choose == 2) checktable();
+        else if (choose == 3) Bestselling();
         else if (choose == 4) {
             int tableID;
-            cout << "Enter Table ID: ";
+            cout << "ENTER TABLE ID: ";
             cin >> tableID;
             if (tableID >= 1 && tableID < tables.size()) payslip(tableID);
-            else cout << "Invalid ID!" << endl;
+            else cout << "INVALID ID!" << endl;
         }
         else if (choose == 5) viewSavedData();
         else if (choose == 6) {
@@ -419,7 +457,7 @@ void Host() {
             cout << ">>> DATA SAVED <<<" << endl;
         }
         else if (choose == 7) manageTables();
-            else if (choose == 8) resetData();
+        else if (choose == 8) resetData();
     }
 }
 
@@ -434,7 +472,72 @@ void checktable() {
         cout << "Table " << i << " used " << useTable[i] << " times" << endl;
 }
 
-void Bestselling() { cout << "Feature coming soon!" << endl; }
+void Bestselling() {
+
+    if (tables.size() == 0) {
+        cout << "No data\n";
+        return;
+    }
+
+    vector<string> name;
+    vector<int> totalQty;
+
+    // วนทุกโต๊ะ
+    for (int t = 1; t <= 5; t++) {
+
+        // วนทุก order ในโต๊ะ
+        for (int i = 0; i < tables[t].count; i++) {
+
+            string item = tables[t].List[i];
+            int qty = tables[t].Amount[i];
+
+            bool found = false;
+
+            // เช็คว่าเคยมีใน list หรือยัง
+            for (int j = 0; j < name.size(); j++) {
+
+                if (name[j] == item) {
+
+                    totalQty[j] += qty;
+                    found = true;
+                    break;
+                }
+            }
+
+            // ถ้ายังไม่เคยมี
+            if (!found) {
+
+                name.push_back(item);
+                totalQty.push_back(qty);
+
+            }
+        }
+    }
+
+    // หาเมนูขายดีที่สุด
+    if (name.size() == 0) {
+        cout << "No orders yet\n";
+        return;
+    }
+
+    int maxIndex = 0;
+
+    for (int i = 1; i < totalQty.size(); i++) {
+
+        if (totalQty[i] > totalQty[maxIndex]) {
+
+            maxIndex = i;
+
+        }
+    }
+
+    cout << "\n===== BEST SELLING MENU =====\n";
+
+    cout << name[maxIndex]
+        << " | Sold: "
+        << totalQty[maxIndex]
+        << endl;
+}
 
 void payslip(int tableID) {
     if (tables[tableID].count == 0) { cout << "No orders!" << endl; return; }
@@ -541,7 +644,7 @@ void resetData() {
 
         cout << ">>> ALL DATA HAS BEEN RESET <<<" << endl;
     }
-    else if(confirm == 2){
+    else if (confirm == 2) {
         cout << ">>> RESET CANCELLED <<<" << endl;
     }
     else {
@@ -566,15 +669,22 @@ int main() {
             table = 0;
             customer();
         }
-        else if (Num == 2 || Num == 3) {
+        else if (Num == 2) {
             string pass;
             cout << "Password: ";
             cin >> pass;
-            if (pass == "555") {
-                if (Num == 2) employ();
-                else Host();
-            }
-            else cout << "Wrong Password!" << endl;
+
+            if (pass == "555") employ();
+
         }
+        else if (Num == 3) {
+            string pass;
+            cout << "Password: ";
+            cin >> pass;
+
+            if (pass == "999") Host();
+
+        }
+        else cout << "Input valid error" << endl;
     }
 }
