@@ -22,7 +22,7 @@ struct TableOrder {
 string food;
 int Num;
 int table = 0;
-int price[10]; 
+int price[10];
 int menu;
 int more;
 int amount;
@@ -48,6 +48,7 @@ void backtohome();
 void viewSavedData();
 void saveData();
 void loadData();
+void resetData();
 void manageTables();
 int Helpercode(int min, int max);
 
@@ -82,7 +83,7 @@ void selectTable() {
     while (true) {
         cout << endl << endl;
         cout << "================== SELECT TABLE ==================" << endl;
-       
+
         for (int i = 1; i < tables.size(); i++) {
             cout << "  (" << i << ") TABLE " << i << endl;
         }
@@ -139,8 +140,8 @@ void customer() {
         if (menu == 0) {
             return;
         }
-        if (menu == 9) { 
-            table = 0; continue; 
+        if (menu == 9) {
+            table = 0; continue;
         }
 
         if (menu >= 1 && menu <= 4) {
@@ -263,14 +264,14 @@ int moree() {
         backtohome();
         cin >> more;
         if (more == 1) return 1;
-        if (more == 2) { 
-            showBill(); 
-            return 0; 
+        if (more == 2) {
+            showBill();
+            return 0;
         }
         if (more == 0) return 0;
-        if (more == 9) { 
-            table = 0; 
-            return 1; 
+        if (more == 9) {
+            table = 0;
+            return 1;
         }
     }
 }
@@ -312,24 +313,25 @@ void employ() {
 void Host() {
     int choose;
     while (true) {
-        cout << "\n--- HOST MENU ---\n1.Summary 2.Usage 3.Best selling 4.Payslip 5.View Data 6.Save 7.Manage Tables 0.Back\nSELECT >> ";
+        cout << "\n--- HOST MENU ---\n|1.Summary |2.Usage |3.Best selling |4.Payslip |5.View Data |6.Save |7.Manage Tables |8.reset |0.Back|\nSELECT >> ";
         cin >> choose;
         if (choose == 0) return;
         else if (choose == 1) summarize();
         else if (choose == 2) checktable();
         else if (choose == 4) {
             int tableID;
-            cout << "Enter Table ID: "; 
+            cout << "Enter Table ID: ";
             cin >> tableID;
             if (tableID >= 1 && tableID < tables.size()) payslip(tableID);
             else cout << "Invalid ID!" << endl;
         }
         else if (choose == 5) viewSavedData();
-        else if (choose == 6) { 
-            saveData(); 
-            cout << ">>> DATA SAVED <<<" << endl; 
+        else if (choose == 6) {
+            saveData();
+            cout << ">>> DATA SAVED <<<" << endl;
         }
         else if (choose == 7) manageTables();
+            else if (choose == 8) resetData();
     }
 }
 
@@ -429,31 +431,60 @@ void viewSavedData() {
     summarize();
     checktable();
 }
+void resetData() {
+    int confirm;
+    cout << "\n!!! WARNING: This will delete ALL current orders and history !!!" << endl;
+    cout << "Are you sure you want to reset? (1.yes/2.no): ";
+    cin >> confirm;
+
+    if (confirm == 1) {
+        // 1. ล้างข้อมูลใน Vector ของ tables และ useTable ใน RAM
+        for (int i = 0; i < tables.size(); i++) {
+            tables[i].List.clear();
+            tables[i].Price.clear();
+            tables[i].Amount.clear();
+            tables[i].count = 0;
+            tables[i].total = 0;
+        }
+
+        // 2. รีเซ็ตจำนวนครั้งที่ใช้โต๊ะเป็น 0
+        fill(useTable.begin(), useTable.end(), 0);
+
+
+        cout << ">>> ALL DATA HAS BEEN RESET <<<" << endl;
+    }
+    else if(confirm == 2){
+        cout << ">>> RESET CANCELLED <<<" << endl;
+    }
+    else {
+        cout << ">>> INVALID INPUT <<<" << endl;
+    }
+}
 
 int main() {
     loadData();
     while (true) {
         home();
-        if (cin.fail()) { 
-            cin.clear(); 
-            cin.ignore(1000, '\n'); 
-            continue; 
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
         }
-        if (Num == 0) { 
-            saveData(); 
-            return 0; 
+        if (Num == 0) {
+            saveData();
+            return 0;
         }
-        if (Num == 1) { 
-            table = 0; 
-            customer(); 
+        if (Num == 1) {
+            table = 0;
+            customer();
         }
         else if (Num == 2 || Num == 3) {
-            string pass; 
-            cout << "Password: "; 
+            string pass;
+            cout << "Password: ";
             cin >> pass;
-            if (pass == "555") { 
-                if (Num == 2) employ(); 
-                else Host(); 
+            if (pass == "555") {
+                if (Num == 2) employ();
+                else Host();
             }
             else cout << "Wrong Password!" << endl;
         }
